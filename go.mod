@@ -1,0 +1,3 @@
+module coder-cli
+
+go 1.25.4
