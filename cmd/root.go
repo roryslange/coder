@@ -1,15 +1,13 @@
-/*
-Copyright © 2025 Rory Lange rorystrattonlange@gmail.com
-*/
 package cmd
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
-
-
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -26,8 +24,13 @@ to quickly create a Cobra application.`,
 	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+var openFileCmd = &cobra.Command{
+	Use: "open [filePath]",
+	Short: "open a file",
+	Long: "open a file to make changes",
+	Run: openFile,
+} 
+
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -45,6 +48,24 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.AddCommand(openFileCmd)
+
 }
+
+func openFile(cobra *cobra.Command, args []string) {
+	fmt.Printf("hello from open!")
+}
+
+func setupConfig() {
+	viper.SetConfigName("coder")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("$HOME")
+	viper.SetDefault("priority", "medium")
+	viper.SetDefault("file", filepath.Join(os.Getenv("$HOME"), ".coder.json"))
+
+	viper.ReadInConfig()
+}
+
+
 
 
