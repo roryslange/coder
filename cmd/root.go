@@ -1,6 +1,5 @@
 /*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
+Copyright © 2025 Rory Lange rorystrattonlange@gmail.com
 */
 package cmd
 
