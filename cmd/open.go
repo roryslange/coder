@@ -18,7 +18,7 @@ func init() {
 }
 
 func openFile(cobra *cobra.Command, args []string) {
-	p := tea.NewProgram(interfaces.SimpleProgram("hello"))
+	p := tea.NewProgram(interfaces.SimpleProgram("hello"), tea.WithAltScreen())
 	_, err := p.Run() // _ is supposed to be a model but idk what to do with it yet
 	if err != nil {
 		panic(err)
