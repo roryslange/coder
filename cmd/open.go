@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/roryslange/coder/interfaces"
 )
 
 var openCmd = &cobra.Command{
@@ -18,5 +18,9 @@ func init() {
 }
 
 func openFile(cobra *cobra.Command, args []string) {
-	fmt.Println("hello from open in its own file!")
+	p := tea.NewProgram(interfaces.SimpleProgram("hello"))
+	_, err := p.Run() // _ is supposed to be a model but idk what to do with it yet
+	if err != nil {
+		panic(err)
+	}
 }
