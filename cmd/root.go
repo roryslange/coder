@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -24,13 +23,6 @@ to quickly create a Cobra application.`,
 	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
-var openFileCmd = &cobra.Command{
-	Use: "open [filePath]",
-	Short: "open a file",
-	Long: "open a file to make changes",
-	Run: openFile,
-} 
-
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -48,14 +40,10 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.AddCommand(openFileCmd)
 
 }
 
-func openFile(cobra *cobra.Command, args []string) {
-	fmt.Printf("hello from open!")
-}
-
+// wont use yet until i need to
 func setupConfig() {
 	viper.SetConfigName("coder")
 	viper.SetConfigType("yaml")
@@ -65,7 +53,3 @@ func setupConfig() {
 
 	viper.ReadInConfig()
 }
-
-
-
-
