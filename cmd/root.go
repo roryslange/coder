@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -39,17 +40,17 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	setupConfig()
 
 }
 
-// wont use yet until i need to
 func setupConfig() {
 	viper.SetConfigName("coder")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME")
+	viper.AddConfigPath(".")
 	viper.SetDefault("priority", "medium")
 	viper.SetDefault("file", filepath.Join(os.Getenv("$HOME"), ".coder.json"))
 
 	viper.ReadInConfig()
+	fmt.Println("here is the config file:" + viper.GetViper().ConfigFileUsed())
 }
