@@ -1,14 +1,30 @@
 package interfaces
 
 import (
+	"fmt"
+	"os"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type openFilePage struct {
 	filePath string
+	file os.File
 }
 
-func (o openFilePage) Init() tea.Cmd { return nil }
+func OpenFile(path string) openFilePage {
+	return openFilePage{filePath: path}
+}
+
+func (o openFilePage) Init() tea.Cmd { 
+	file, err := os.OpenFile(o.filePath, os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		panic(err)
+	}
+	o.file = *file
+	fmt.Println("yup file is here: " + o.filePath)
+	return nil 
+}
 
 func (o openFilePage) View() string { return "file" }
 

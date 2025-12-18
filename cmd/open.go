@@ -18,7 +18,16 @@ func init() {
 }
 
 func openFile(cobra *cobra.Command, args []string) {
-	p := tea.NewProgram(interfaces.SimpleProgram("hello"))
+	var p *tea.Program
+
+	switch len(args) {
+	case 0:
+		p = tea.NewProgram(interfaces.SimpleProgram("empty editor!"))
+	case 1:
+		p = tea.NewProgram(interfaces.OpenFile(args[0]))
+	default:
+		p = tea.NewProgram(interfaces.SimpleProgram("you put too many files to open"))
+	}
 	_, err := p.Run() // _ is supposed to be a model but idk what to do with it yet
 	if err != nil {
 		panic(err)
