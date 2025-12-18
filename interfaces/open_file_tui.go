@@ -10,7 +10,7 @@ type openFilePage struct {
 
 func (o openFilePage) Init() tea.Cmd { return nil }
 
-func (o openFilePage) View() string { return "file"} 
+func (o openFilePage) View() string { return "file" }
 
 func (o openFilePage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg.(type) {
