@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"bufio"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -9,6 +10,7 @@ import (
 type openFilePage struct {
 	filePath string
 	file *os.File
+	readWriter *bufio.ReadWriter
 }
 
 func OpenFile(path string) *openFilePage {
@@ -16,11 +18,14 @@ func OpenFile(path string) *openFilePage {
 }
 
 func (o *openFilePage) Init() tea.Cmd { 
-	file, err := os.OpenFile(o.filePath, os.O_RDWR|os.O_CREATE, 0644)
+	var err error
+	o.file, err = os.OpenFile(o.filePath, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		panic(err)
 	}
-	o.file = file
+
+	o.readWriter = bufio.NewReadWriter(bufio.NewReader(o.file), bufio.NewWriter(o.file))
+
 
 	return nil 
 }
