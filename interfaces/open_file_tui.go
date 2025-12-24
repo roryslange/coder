@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -31,19 +32,20 @@ func (o *openFilePage) Init() tea.Cmd {
 }
 
 func (o *openFilePage) View() string {
-	return ""
+	data := make([]byte, 100)
+	o.readWriter.Reader.Read(data)
+	return fmt.Sprintf(string(data))
 }
 
 func (o *openFilePage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-    switch msg.(type) {
+    switch msg := msg.(type) {
     case tea.KeyMsg:
-        switch msg.(tea.KeyMsg).String() {
-        case "ctrl+c":
+        switch msg.Type {
+        case tea.KeyCtrlC:
 			e := o.file.Close()
 			if e != nil {
 				panic(e)
 			}
-
             return o, tea.Quit
         }
     }
