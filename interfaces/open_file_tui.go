@@ -3,7 +3,9 @@ package interfaces
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -11,6 +13,7 @@ import (
 type openFilePage struct {
 	filePath string
 	file *os.File
+	lines []string
 	readWriter *bufio.ReadWriter
 }
 
@@ -32,9 +35,19 @@ func (o *openFilePage) Init() tea.Cmd {
 }
 
 func (o *openFilePage) View() string {
-	data := make([]byte, 100)
-	o.readWriter.Reader.Read(data)
-	return fmt.Sprintf(string(data))
+	for {
+		line, err := o.readWriter.Reader.ReadString('\n')
+		if err != nil && err != io.EOF {
+            return fmt.Sprintf("error reading file: %s", err.Error())
+        }
+		if len(line) > 0 {		
+			o.lines = append(o.lines, line)
+		}
+		if err == io.EOF {
+			break
+		}
+	}
+	return strings.Join(o.lines, "")
 }
 
 func (o *openFilePage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
