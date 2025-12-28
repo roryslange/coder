@@ -2,12 +2,12 @@ package interfaces
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/bubbles/viewport"
 )
 
 type openFilePage struct {
@@ -15,6 +15,7 @@ type openFilePage struct {
 	file *os.File
 	lines []string
 	readWriter *bufio.ReadWriter
+	Viewport viewport.Model
 }
 
 func OpenFile(path string) *openFilePage {
@@ -30,15 +31,10 @@ func (o *openFilePage) Init() tea.Cmd {
 
 	o.readWriter = bufio.NewReadWriter(bufio.NewReader(o.file), bufio.NewWriter(o.file))
 
-
-	return nil 
-}
-
-func (o *openFilePage) View() string {
 	for {
 		line, err := o.readWriter.Reader.ReadString('\n')
 		if err != nil && err != io.EOF {
-            return fmt.Sprintf("error reading file: %s", err.Error())
+            panic(err)
         }
 		if len(line) > 0 {		
 			o.lines = append(o.lines, line)
@@ -47,7 +43,12 @@ func (o *openFilePage) View() string {
 			break
 		}
 	}
-	return strings.Join(o.lines, "")
+
+	return nil 
+}
+
+func (o *openFilePage) View() string {
+	return o.Viewport.View()
 }
 
 func (o *openFilePage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -61,6 +62,19 @@ func (o *openFilePage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
             return o, tea.Quit
         }
+	case tea.WindowSizeMsg:
+		o.Viewport = viewport.New(msg.Width, msg.Height-1)
+		o.Viewport.YPosition = 0
+		o.updateViewport()
     }
     return o, nil
+}
+
+func (o *openFilePage) updateViewport() {
+	var buf strings.Builder
+	for _, line := range o.lines {
+		buf.WriteString(line)
+		buf.WriteByte('\n')
+	}
+	o.Viewport.SetContent(buf.String())
 }
