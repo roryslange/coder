@@ -24,7 +24,7 @@ func openFile(cobra *cobra.Command, args []string) {
 	case 0:
 		p = tea.NewProgram(interfaces.SimpleProgram("empty editor!"))
 	case 1:
-		p = tea.NewProgram(interfaces.OpenFile(args[0]))
+		p = tea.NewProgram(interfaces.OpenModel(args[0]))
 	default:
 		p = tea.NewProgram(interfaces.SimpleProgram("you put too many files to open"))
 	}
