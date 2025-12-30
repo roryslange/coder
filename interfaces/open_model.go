@@ -84,7 +84,6 @@ func (m *openModel) updateViewport() {
 	var buf strings.Builder
 	for _, line := range m.lines {
 		buf.WriteString(string(line))
-		buf.WriteByte('\n')
 	}
 	m.viewport.SetContent(buf.String())
 }
