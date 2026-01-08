@@ -20,6 +20,7 @@ type openModel struct {
 	lines [][]rune
 	cursor cursor
 	viewport viewport.Model
+	file *os.File
 }
 
 func OpenModel(filepath string) *openModel {
@@ -27,7 +28,7 @@ func OpenModel(filepath string) *openModel {
 }
 
 func (m *openModel) Init() tea.Cmd {
-	m.lines = initFileContents(m.path)
+	m.lines = m.initFileContents(m.path)
 	m.cursor = cursor{0,0}
 	return nil
 }
@@ -41,7 +42,14 @@ func (m *openModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyMsg:
 			switch msg.Type {
 			case tea.KeyCtrlC:
+				m.closeFile()
 				return m, tea.Quit
+			case tea.KeyRight:
+				m.cursor.column += 1
+				m.updateViewport()
+			case tea.KeyLeft:
+				m.cursor.column -= 1
+				m.updateViewport()
 			}
 		case tea.WindowSizeMsg:
 			m.viewport = viewport.New(msg.Width, msg.Height - 1)
@@ -51,12 +59,13 @@ func (m *openModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func initFileContents(filepath string) [][]rune {
-	file, err := os.OpenFile(filepath, os.O_RDWR|os.O_CREATE, 0644)
+func (m *openModel) initFileContents(filepath string) [][]rune {
+	var err error
+	m.file, err = os.OpenFile(filepath, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		panic(err)
 	}
-	reader := bufio.NewReader(file)
+	reader := bufio.NewReader(m.file)
 	var buffer [][]rune
 
 	for {
@@ -71,19 +80,24 @@ func initFileContents(filepath string) [][]rune {
 			break
 		}
 	}
-
-	err = file.Close()
-	if err != nil {
-		panic(err)
-	}
-
 	return buffer
 }
 
 func (m *openModel) updateViewport() {
 	var buf strings.Builder
-	for _, line := range m.lines {
+	for i, line := range m.lines {
+		if (i == m.cursor.row) {
+			line[m.cursor.row % len(line)] = '\u258C'
+
+		}
 		buf.WriteString(string(line))
 	}
 	m.viewport.SetContent(buf.String())
+}
+
+func (m *openModel) closeFile() {
+	err := m.file.Close()
+	if err != nil {
+		panic(err)
+	}
 }
