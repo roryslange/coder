@@ -45,10 +45,22 @@ func (m *openModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.closeFile()
 				return m, tea.Quit
 			case tea.KeyRight:
-				m.cursor.column += 1
+				m.cursor.column = min(m.cursor.column + 1, len(m.lines[m.cursor.row]))
 				m.updateViewport()
 			case tea.KeyLeft:
-				m.cursor.column -= 1
+				m.cursor.column = max(m.cursor.column - 1, 0)
+				m.updateViewport()
+			case tea.KeyUp:
+				if m.cursor.row > 0 {
+					m.cursor.column = min(m.cursor.column, len(m.lines[m.cursor.row]))
+					m.cursor.row--
+				}
+				m.updateViewport()
+			case tea.KeyDown:
+				if m.cursor.row <= len(m.lines) {
+					m.cursor.column = min(m.cursor.column, len(m.lines[m.cursor.row]))
+					m.cursor.row++
+				}
 				m.updateViewport()
 			}
 		case tea.WindowSizeMsg:
@@ -86,12 +98,12 @@ func (m *openModel) initFileContents(filepath string) [][]rune {
 func (m *openModel) updateViewport() {
 	var buf strings.Builder
 	for i, line := range m.lines {
-		if (i == m.cursor.row) {
-			line[m.cursor.row % len(line)] = '\u258C'
-
+		if i == m.cursor.row {
+			line[m.cursor.column] = '\u258C'
 		}
 		buf.WriteString(string(line))
 	}
+
 	m.viewport.SetContent(buf.String())
 }
 
