@@ -23,6 +23,8 @@ type openModel struct {
 	file *os.File
 }
 
+var CURSOR_CHARACTER rune = '\u258C'
+
 func OpenModel(filepath string) *openModel {
 	return &openModel{path: filepath}
 }
@@ -99,7 +101,7 @@ func (m *openModel) updateViewport() {
 	var buf strings.Builder
 	for i, line := range m.lines {
 		if i == m.cursor.row {
-			line[m.cursor.column] = '\u258C'
+			line[m.cursor.column] = CURSOR_CHARACTER
 		}
 		buf.WriteString(string(line))
 	}
